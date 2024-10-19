@@ -1,4 +1,6 @@
-﻿using IPA;
+﻿using HarmonyLib;
+using IPA;
+using System.Reflection;
 using IPALogger = IPA.Logging.Logger;
 
 namespace CustomAvatarsGetHeadNotePatch
@@ -11,6 +13,8 @@ namespace CustomAvatarsGetHeadNotePatch
         /// Use to send log messages through BSIPA.
         /// </summary>
         internal static IPALogger Log { get; private set; }
+        public const string HARMONY_ID = "com.github.rynan4818.CustomAvatarsGetHeadNotePatch";
+        private static Harmony _harmony;
 
         [Init]
         public Plugin(IPALogger logger)
@@ -22,13 +26,16 @@ namespace CustomAvatarsGetHeadNotePatch
         [OnStart]
         public void OnApplicationStart()
         {
-            Plugin.Log.Info("OnApplicationStart");
+            Log.Info("OnApplicationStart");
+            _harmony = new Harmony(HARMONY_ID);
+            _harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
         [OnExit]
         public void OnApplicationQuit()
         {
-
+            Log.Debug("OnApplicationQuit");
+            _harmony.UnpatchSelf();
         }
 
     }
